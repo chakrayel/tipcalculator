@@ -21,8 +21,9 @@ The following **optional** features are implemented:
 
 
 The following **additional** features are implemented:
-- [X] The 3 tip % segment values can be changed as desired in settings screen.
-- [X] The Default currency symbol can be changed in settings screen.
+- [X] The tip % segment values can be changed as desired in Settings view.
+- [X] The default currency symbol can be changed in Settings view and reflects instantly when navigated to main view.
+- [X] The slider in Settings view moves to appropriate position to indicate value of the tip % when clicked on a segment
 
 ## Video Walkthrough 
 
