@@ -1,4 +1,4 @@
-# Pre-work - Calculator
+# Pre-work - Tip Calculator
 
 Tip Calculator application for iOS - to calculate tip and total for a given bill amount.
 
