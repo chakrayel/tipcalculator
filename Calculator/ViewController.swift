@@ -16,16 +16,19 @@ class ViewController: UIViewController {
     @IBOutlet weak var tipSegment: UISegmentedControl!
     var defaultCurrencySymbol: String = "$"
     var defaultSliderValue: Int = 10
-    let tipPercentages = [0.10, 0.15, 0.20]
     let defaults = UserDefaults.standard
+    
+    let now = Date()
+    var myDateFormatter = DateFormatter()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("VC: view did load")
+        print("VC####: view did load ####")
         // Do any additional setup after loading the view, typically from a nib.
         launchedBeforeCheck()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -45,12 +48,15 @@ class ViewController: UIViewController {
         let total = bill + tip
         tipLabel.text = defaultCurrencySymbol + String(format: "%.2f", tip)
         totalLabel.text = defaultCurrencySymbol + String(format: "%.2f",total)
+        // save last bill value
+        UserDefaults.standard.set(billField.text!, forKey: "last_bill.value")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print("VC: view will appear")
-        
+      
+        billField.becomeFirstResponder()
         defaultCurrencySymbol = defaults.string(forKey: "currencySymbolSegment.value") ?? defaultCurrencySymbol
         defaultSliderValue = defaults.integer(forKey: "slider.value")
         
@@ -81,13 +87,26 @@ class ViewController: UIViewController {
     }
     
     func launchedBeforeCheck() {
-        let launchedBefore = UserDefaults.standard.bool(forKey: "launchedBefore")
-        if launchedBefore  {
-            print("Not first launch.")
-        } else {
-            print("First launch, setting UserDefault.")
-            UserDefaults.standard.set(true, forKey: "launchedBefore")
+
+        myDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+
+        let launchedDateTimeString = defaults.string(forKey: "launchedDateTimeString")
+        
+        if launchedDateTimeString == nil {
+            // set launchDateTime if it isn't set already
+            UserDefaults.standard.set(myDateFormatter.string(from: now), forKey: "launchedDateTimeString")
+        }
+        
+        if  (launchedDateTimeString != nil)  &&
+            myDateFormatter.date(from: launchedDateTimeString!)!.timeIntervalSince(Date()) < -600 {
+            print("Launched after 10 minutes: \(myDateFormatter.date(from: launchedDateTimeString!)!.timeIntervalSince(Date()))")
+            // delete cached UserDefaults data
             defaults.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+        } else {
+            //print("Launched within 30 seconds, currencySymbolSegment.value:"+(defaults.string(forKey: "currencySymbolSegment.value") ?? "$"))
+            print("Launched within 10 minutes, last_bill.value:"+(defaults.string(forKey: "last_bill.value")!))
+            billField.text = String(defaults.string(forKey: "last_bill.value")!)
+            billField.becomeFirstResponder()
         }
     }
 }
